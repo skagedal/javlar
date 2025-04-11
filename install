@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+BIN=${HOME}/local/bin
+JAVA_HOME=$(/usr/libexec/java_home)
+export JAVA_HOME
+
+mvn clean package assembly:single
+
+
+cat > "${BIN}/javlar" <<EOF
+#!/usr/bin/env bash
+${JAVA_HOME}/bin/java -jar $(pwd)/target/javlar-1.0-SNAPSHOT-jar-with-dependencies.jar "\$@"
+EOF
+chmod 755 ${BIN}/javlar
+

@@ -99,7 +99,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>skagedal.blogdans.App</mainClass>
+                            <mainClass>skagedal.javlar.Application</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
