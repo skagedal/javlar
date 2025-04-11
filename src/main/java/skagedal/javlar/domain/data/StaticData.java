@@ -1,7 +1,7 @@
 package skagedal.javlar.domain.data;
 
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 import skagedal.javlar.domain.model.AdditionalData;
 import skagedal.javlar.domain.model.UnversionedCoordinates;
 
@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@NullMarked
 public class StaticData {
     private final YAMLMapper yamlMapper = new YAMLMapper();
     private StaticData() {
@@ -51,7 +52,7 @@ public class StaticData {
         }
     }
 
-    private static @NotNull String removeExtension(Path path) {
+    private static String removeExtension(Path path) {
         return path.getFileName().toString().replaceFirst("\\.yaml$", "");
     }
 
@@ -64,15 +65,10 @@ public class StaticData {
         }
     }
 
-    private static @NotNull Path librariesPath() {
-        try {
-            if (StaticData.class.getClassLoader().getResource("libraries") instanceof URL resource) {
-                return Paths.get(resource.toURI());
-            }
-            throw new IllegalStateException("Could not find URL of libraries directory in resources");
-        } catch (URISyntaxException exception) {
-            throw new IllegalStateException("Could not find libraries directory", exception);
+    private static Path librariesPath() {
+        if (System.getenv("JAVLAR_LIBRARIES_PATH") instanceof String envPath) {
+            return Path.of(envPath);
         }
+        return Path.of("libraries");
     }
-
 }

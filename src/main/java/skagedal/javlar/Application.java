@@ -2,6 +2,7 @@ package skagedal.javlar;
 
 import skagedal.javlar.domain.JavaDirectoryService;
 import skagedal.javlar.domain.data.StaticData;
+import skagedal.javlar.util.LogbackConfig;
 
 import java.io.PrintStream;
 
@@ -32,6 +33,7 @@ public class Application {
                 serverApp.run();
             }
             case "list" -> {
+                LogbackConfig.setLogLevelToWarn();
                 final var service = JavaDirectoryService.create();
 
                 for (var library : StaticData.libraries()) {
