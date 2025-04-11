@@ -1,0 +1,4 @@
+description: |
+  **Jackson** is a widely-used Java ecosystem for processing data in JSON and other formats.
+
+  The `jackson-dataformat-yaml` module provides support for reading and writing data in the YAML format.

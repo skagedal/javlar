@@ -1,0 +1,5 @@
+description: |
+  **Flexmark** is a Java library for processing markdown.
+  
+  The `flexmark` artifact includes the basic Markdown processing and HTMl rendering. 
+  For the full package, see the `flexmark-all` artifact.

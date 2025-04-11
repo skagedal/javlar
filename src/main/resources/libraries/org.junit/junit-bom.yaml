@@ -1,0 +1,5 @@
+description: |
+  **JUnit 5** is the current generation of JUnit, a unit testing framework for the JVM.
+  
+  The `junit-bom` module provides a bill-of-materials for JUnit. Use this to make sure
+  your versions are consistent across all JUnit modules.

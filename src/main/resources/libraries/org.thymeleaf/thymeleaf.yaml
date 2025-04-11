@@ -1,0 +1,6 @@
+homepage: https://www.thymeleaf.org/
+scm: https://github.com/thymeleaf
+description: |
+  **Thymeleaf** is a Java library for processing and creating HTML, XML, and other text-based documents.
+  
+  The `thymeleaf` module provides the core functionality for processing Thymeleaf templates.

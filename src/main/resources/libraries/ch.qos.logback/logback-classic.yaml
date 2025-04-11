@@ -1,0 +1,4 @@
+description: |
+  **Logback** is a logging framework for Java applications.
+  
+  `logback-classic` implements a general, configurable logger.

@@ -1,0 +1,6 @@
+description: |
+  **Logback** is a logging framework for Java applications.
+  
+  `logback-core` is the core module of the Logback framework, providing the basic functionality for setting up
+  logging. To actually log messages, you also need an implementation such as `logback-classic`.
+  

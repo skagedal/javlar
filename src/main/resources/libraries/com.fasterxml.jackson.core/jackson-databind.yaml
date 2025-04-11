@@ -1,0 +1,6 @@
+javadoc: https://fasterxml.github.io/jackson-databind/javadoc/2.5/
+description: |
+  **Jackson** is a widely-used Java ecosystem for processing data in JSON and other formats.
+  
+  The `jackson-databind` module provides a high-level API for directly converting Java objects to and from JSON,
+  using annotations to control the serialization and deserialization process.

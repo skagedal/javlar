@@ -1,0 +1,5 @@
+description: |
+  **JUnit 5** is the current generation of JUnit, a unit testing framework for the JVM.
+  
+  The `junit-jupiter` module provides the programming model for writing tests, and an extension
+  model to simplify common test workflows.

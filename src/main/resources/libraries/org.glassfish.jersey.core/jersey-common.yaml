@@ -1,0 +1,6 @@
+homepage: https://eclipse-ee4j.github.io/jersey/
+scm: https://github.com/eclipse-ee4j/jersey
+description: |
+  The **Eclipse Jersey** project is a reference implementation of Jakarta RESTful Web Services, also known as JAX-RS.
+  
+  The `jersey-common` module contains common utility classes and interfaces used by other Jersey modules.

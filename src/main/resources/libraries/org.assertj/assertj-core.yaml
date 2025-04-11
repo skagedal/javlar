@@ -1,0 +1,4 @@
+description: |
+  **AssertJ** is a Java library that provides a rich set of assertions, enabling developers to write tests in a fluid style.
+  
+  The `assertj-core` module is the core of the AssertJ library, providing the main API for writing assertions.
