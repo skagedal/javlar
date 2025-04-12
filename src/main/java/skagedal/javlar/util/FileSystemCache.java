@@ -4,15 +4,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jspecify.annotations.NullMarked;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.attribute.FileTime;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.HexFormat;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 @NullMarked
 public class FileSystemCache<T> {
@@ -28,12 +29,13 @@ public class FileSystemCache<T> {
         this.path = path;
     }
 
-    public void initialize() throws IOException {
+    public void initialize(final String description) throws IOException {
         Files.createDirectories(path);
+        Files.writeString(path.resolve("_README"), description);
     }
 
     public T get(final String key) throws IOException {
-        final var filePath = path.resolve(key + ".json");
+        final var filePath = path.resolve(sha256(key));
         if (existsAndIsFresh(filePath)) {
             return mapper.readValue(Files.newBufferedReader(filePath), klass);
         } else {
@@ -53,13 +55,17 @@ public class FileSystemCache<T> {
         }
     }
 
-    public static void main(String[] args) {
-        final var cache = new FileSystemCache<>(String.class, String::toUpperCase, Path.of("/tmp/upcasecache"));
+    private static MessageDigest createDigest() {
         try {
-            cache.initialize();
-            System.out.println(cache.get("test"));
-        } catch (IOException e) {
-            e.printStackTrace();
+            return MessageDigest.getInstance("SHA-256");
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("SHA-256 algorithm not available", e);
         }
+    }
+
+    private String sha256(String input) {
+        final var digest = createDigest();
+        final var hash = digest.digest(input.getBytes(StandardCharsets.UTF_8));
+        return HexFormat.of().formatHex(hash);
     }
 }

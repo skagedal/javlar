@@ -22,19 +22,27 @@ public class JavaDirectoryService {
     private final FileSystemCache<MavenCentralResponse> cache;
 
     public static JavaDirectoryService create() {
+        final var mavenCentralApi = new MavenCentralApi();
+        final var cache = new FileSystemCache<>(
+            MavenCentralResponse.class,
+            mavenCentralApi::search,
+            Path.of(System.getProperty("user.home"), ".javlar", "maven-central-cache")
+        );
+        try {
+            cache.initialize("""
+                This directory contains cached responses from the Maven Central API.
+                """);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         return new JavaDirectoryService(
-            new MavenCentralApi(),
-            MavenRepository.create()
+            MavenRepository.create(), cache
         );
     }
 
-    public JavaDirectoryService(MavenCentralApi mavenCentralApi, MavenRepository mavenRepository) {
+    public JavaDirectoryService(MavenRepository mavenRepository, final FileSystemCache<MavenCentralResponse> cache) {
         this.mavenRepository = mavenRepository;
-        this.cache = new FileSystemCache<>(
-            MavenCentralResponse.class,
-            mavenCentralApi::search,
-            Path.of("/tmp/javlar-maven-central-cache")
-        );
+        this.cache = cache;
     }
 
     public void createFavorite(UnversionedCoordinates createRequest) {
