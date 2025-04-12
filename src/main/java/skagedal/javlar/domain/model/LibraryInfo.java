@@ -1,6 +1,7 @@
 package skagedal.javlar.domain.model;
 
-import org.jetbrains.annotations.Nullable;
+
+import org.jspecify.annotations.Nullable;
 
 import java.net.URI;
 import java.util.List;

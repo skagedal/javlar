@@ -1,5 +1,8 @@
 package skagedal.javlar.cli;
 
+import picocli.CommandLine;
+import picocli.CommandLine.Model.CommandSpec;
+
 public sealed interface Command {
     record Serve() implements Command {
     }
@@ -10,7 +13,9 @@ public sealed interface Command {
     record Describe(String artifactId) implements Command {
     }
 
-    record Help() implements Command {
-        public static final String NAME = "help";
+    record Search(String query) implements Command {
+    }
+
+    record Help(CommandSpec spec) implements Command {
     }
 }

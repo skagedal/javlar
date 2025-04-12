@@ -4,6 +4,7 @@ import skagedal.javlar.cli.Cli;
 import skagedal.javlar.cli.Command;
 import skagedal.javlar.domain.JavaDirectoryService;
 import skagedal.javlar.domain.data.StaticData;
+import skagedal.javlar.domain.model.UnversionedCoordinates;
 import skagedal.javlar.util.LogbackConfig;
 
 import java.io.PrintStream;
@@ -45,19 +46,27 @@ public class Application {
             case Command.Describe describe -> {
                 LogbackConfig.setLogLevelToWarn();
                 final var service = JavaDirectoryService.create();
-                final var artifactId = describe.artifactId();
-                final var library = StaticData.libraries()
+                final var unversionedCoordinates = UnversionedCoordinates.parseFromGradleSyntax(describe.artifactId());
+                final var libraryInfo = service.fetchInfo(unversionedCoordinates);
+                final var coordinates = libraryInfo.coordinates();
+                out().printf("%s:%s:%s%n", coordinates.groupId(), coordinates.artifactId(), coordinates.version());
+
+            }
+            case Command.Search search -> {
+                LogbackConfig.setLogLevelToWarn();
+                final var service = JavaDirectoryService.create();
+                final var artifactId = search.query();
+                final var unversionedCoordinates = StaticData.libraries()
                     .stream().filter(p -> p.artifactId().contains(artifactId))
                     .findFirst().orElseThrow();
-                final var libraryInfo = service.fetchInfo(library);
+                final var libraryInfo = service.fetchInfo(unversionedCoordinates);
                 final var coordinates = libraryInfo.coordinates();
                 out().printf("%s:%s:%s%n", coordinates.groupId(), coordinates.artifactId(), coordinates.version());
                 for (var artifact : service.artifacts(libraryInfo)) {
                     out().println(artifact);
-                }
-            }
-            case Command.Help ignored -> {
-                cli.printHelp();
+                }            }
+            case Command.Help help -> {
+                cli.printHelp(help);
             }
         }
     }
