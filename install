@@ -9,7 +9,7 @@ mvn clean package assembly:single
 
 cat > "${BIN}/javlar" <<EOF
 #!/usr/bin/env bash
+JAVLAR_LIBRARIES_PATH="$(pwd)/libraries" \
 ${JAVA_HOME}/bin/java -jar $(pwd)/target/javlar-1.0-SNAPSHOT-jar-with-dependencies.jar "\$@"
 EOF
 chmod 755 ${BIN}/javlar
-

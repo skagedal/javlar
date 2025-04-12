@@ -7,15 +7,19 @@ import skagedal.javlar.domain.model.UnversionedCoordinates;
 import skagedal.javlar.domain.model.LibraryInfo;
 import skagedal.javlar.maven.MavenRepository;
 import skagedal.javlar.mavencentral.MavenCentralApi;
+import skagedal.javlar.mavencentral.MavenCentralResponse;
+import skagedal.javlar.util.FileSystemCache;
 
+import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
 public class JavaDirectoryService {
-    private final MavenCentralApi mavenCentralApi;
     private final MavenRepository mavenRepository;
     private final List<LibraryInfo> repository = new ArrayList<>();
+    private final FileSystemCache<MavenCentralResponse> cache;
 
     public static JavaDirectoryService create() {
         return new JavaDirectoryService(
@@ -25,8 +29,12 @@ public class JavaDirectoryService {
     }
 
     public JavaDirectoryService(MavenCentralApi mavenCentralApi, MavenRepository mavenRepository) {
-        this.mavenCentralApi = mavenCentralApi;
         this.mavenRepository = mavenRepository;
+        this.cache = new FileSystemCache<>(
+            MavenCentralResponse.class,
+            mavenCentralApi::search,
+            Path.of("/tmp/javlar-maven-central-cache")
+        );
     }
 
     public void createFavorite(UnversionedCoordinates createRequest) {
@@ -39,7 +47,7 @@ public class JavaDirectoryService {
     }
 
     public LibraryInfo fetchInfo(UnversionedCoordinates coordinates) {
-        final var response = mavenCentralApi.search("g:" + coordinates.groupId() + " AND a:" + coordinates.artifactId());
+        final var response = searchMavenCentral("g:" + coordinates.groupId() + " AND a:" + coordinates.artifactId());
         final var foundPackages = response.response().numFound();
         if (foundPackages == 0) {
             throw new NoSuchLibraryException("No library found with coordinates " + coordinates);
@@ -65,6 +73,14 @@ public class JavaDirectoryService {
         final var scmUri = pom.map(Model::getScm).map(Scm::getUrl).map(URI::create).orElse(null);
 
         return new LibraryInfo(versionedCoordinates, doc.suffixes(), additionalData, homepageUri, scmUri);
+    }
+
+    private MavenCentralResponse searchMavenCentral(final String query) {
+        try {
+            return cache.get(query);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public List<URI> artifacts(LibraryInfo libraryInfo) {
