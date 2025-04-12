@@ -1,5 +1,7 @@
 package skagedal.javlar;
 
+import skagedal.javlar.cli.Cli;
+import skagedal.javlar.cli.Command;
 import skagedal.javlar.domain.JavaDirectoryService;
 import skagedal.javlar.domain.data.StaticData;
 import skagedal.javlar.util.LogbackConfig;
@@ -23,16 +25,15 @@ public class Application {
     }
 
     private void run() {
-        if (args.length == 0) {
-            out().println("Give a command");
-            return;
-        }
-        switch (args[0]) {
-            case "server" -> {
+        final var cli = new Cli();
+        final var command = cli.parse(args);
+
+        switch (command) {
+            case Command.Serve ignored -> {
                 final var serverApp = new ServerApp();
                 serverApp.run();
             }
-            case "list" -> {
+            case Command.List ignored -> {
                 LogbackConfig.setLogLevelToWarn();
                 final var service = JavaDirectoryService.create();
 
@@ -41,9 +42,10 @@ public class Application {
                     out().printf("%s:%s:%s%n", coordinates.groupId(), coordinates.artifactId(), coordinates.version());
                 }
             }
-            case "describe" -> {
+            case Command.Describe describe -> {
+                LogbackConfig.setLogLevelToWarn();
                 final var service = JavaDirectoryService.create();
-                final var artifactId = args[1];
+                final var artifactId = describe.artifactId();
                 final var library = StaticData.libraries()
                     .stream().filter(p -> p.artifactId().contains(artifactId))
                     .findFirst().orElseThrow();
@@ -54,7 +56,9 @@ public class Application {
                     out().println(artifact);
                 }
             }
-            default -> out().println("Unknown command: " + args[0]);
+            case Command.Help ignored -> {
+                cli.printHelp();
+            }
         }
     }
 
