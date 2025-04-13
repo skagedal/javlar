@@ -7,6 +7,7 @@ import skagedal.javlar.domain.JavaDirectoryService;
 import skagedal.javlar.maven.MavenRepository;
 import skagedal.javlar.mavencentral.MavenCentralApi;
 import skagedal.javlar.mavencentral.MavenCentralResponse;
+import skagedal.javlar.mavencentral.SearchMode;
 import skagedal.javlar.util.BodyMapper;
 import skagedal.javlar.util.FileSystemCache;
 
@@ -28,9 +29,9 @@ class JavaDirectoryControllerTest {
         final var bodyMapper = new BodyMapper(objectMapper);
         final var mavenCentralApi = new MavenCentralApi();
         final var mavenRepository = new MavenRepository(URI.create("https://repo.maven.apache.org/maven2/"));
-        final var directoryService = new JavaDirectoryService(mavenRepository, new FileSystemCache<>(
+        final var directoryService = new JavaDirectoryService(mavenCentralApi, mavenRepository, new FileSystemCache<>(
             MavenCentralResponse.class,
-            mavenCentralApi::search,
+            query -> mavenCentralApi.search(query, new SearchMode.AllVersions()),
             Path.of(System.getProperty("user.home"), ".javlar", "maven-central-cache")
         ));
         final var directoryController = new JavaDirectoryController(directoryService);

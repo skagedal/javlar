@@ -3,11 +3,13 @@ package skagedal.javlar.domain;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Scm;
 import skagedal.javlar.domain.data.StaticData;
+import skagedal.javlar.domain.model.ScmLink;
 import skagedal.javlar.domain.model.UnversionedCoordinates;
 import skagedal.javlar.domain.model.LibraryInfo;
 import skagedal.javlar.maven.MavenRepository;
 import skagedal.javlar.mavencentral.MavenCentralApi;
 import skagedal.javlar.mavencentral.MavenCentralResponse;
+import skagedal.javlar.mavencentral.SearchMode;
 import skagedal.javlar.util.FileSystemCache;
 
 import java.io.IOException;
@@ -25,7 +27,7 @@ public class JavaDirectoryService {
         final var mavenCentralApi = new MavenCentralApi();
         final var cache = new FileSystemCache<>(
             MavenCentralResponse.class,
-            mavenCentralApi::search,
+            query -> mavenCentralApi.search(query, new SearchMode.AllVersions()),
             Path.of(System.getProperty("user.home"), ".javlar", "maven-central-cache")
         );
         try {
@@ -36,11 +38,12 @@ public class JavaDirectoryService {
             throw new RuntimeException(e);
         }
         return new JavaDirectoryService(
-            MavenRepository.create(), cache
-        );
+            mavenCentralApi,
+            MavenRepository.create(),
+            cache);
     }
 
-    public JavaDirectoryService(MavenRepository mavenRepository, final FileSystemCache<MavenCentralResponse> cache) {
+    public JavaDirectoryService(final MavenCentralApi mavenCentralApi, MavenRepository mavenRepository, final FileSystemCache<MavenCentralResponse> cache) {
         this.mavenRepository = mavenRepository;
         this.cache = cache;
     }
@@ -78,14 +81,14 @@ public class JavaDirectoryService {
         final var versionedCoordinates = coordinates.withVersion(doc.latestVersion());
         final var pom = mavenRepository.fetchPom(versionedCoordinates);
         final var homepageUri = pom.map(Model::getUrl).map(URI::create).orElse(null);
-        final var scmUri = pom.map(Model::getScm).map(Scm::getUrl).map(URI::create).orElse(null);
+        final var scmUri = pom.map(Model::getScm).map(Scm::toString).map(ScmLink::parse).orElse(null);
 
         return new LibraryInfo(versionedCoordinates, doc.suffixes(), additionalData, homepageUri, scmUri);
     }
 
     private MavenCentralResponse searchMavenCentral(final String query) {
         try {
-            return cache.get(query);
+            return cache.getOrLoad(query);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

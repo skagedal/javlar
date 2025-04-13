@@ -11,7 +11,8 @@ public record LibraryInfo(
     List<String> suffixes,
     @Nullable AdditionalData additionalData,
     @Nullable URI homepage,
-    URI scmUri) {
+    @Nullable ScmLink scmLink
+) {
 
     public @Nullable URI getUriForHomepage() {
         if (homepage != null) {

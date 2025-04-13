@@ -34,7 +34,7 @@ public class FileSystemCache<T> {
         Files.writeString(path.resolve("_README"), description);
     }
 
-    public T get(final String key) throws IOException {
+    public T getOrLoad(final String key) throws IOException {
         final var filePath = path.resolve(sha256(key));
         if (existsAndIsFresh(filePath)) {
             return mapper.readValue(Files.newBufferedReader(filePath), klass);

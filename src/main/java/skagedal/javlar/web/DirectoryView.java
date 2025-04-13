@@ -6,6 +6,7 @@ import com.vladsch.flexmark.util.data.MutableDataSet;
 import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NotNull;
 import skagedal.javlar.domain.model.LibraryInfo;
+import skagedal.javlar.domain.model.ScmLink;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -76,11 +77,11 @@ public class DirectoryView {
     }
 
     private String sourceControl(LibraryInfo libraryInfo) {
-        if (libraryInfo.scmUri() != null) {
-            return "<a href=\"%s\">Github</a>".formatted(libraryInfo.scmUri());
-        } else {
-            return "";
-        }
+        return switch (libraryInfo.scmLink()) {
+            case ScmLink.AsUri uri -> "<a href=\"%s\">Github</a>".formatted(uri.uri());
+            case ScmLink.AsString s -> s.string();
+            case null -> "";
+        };
     }
 
     private String homepageLink(LibraryInfo libraryInfo) {
