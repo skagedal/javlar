@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Server" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="skagedal.javlar.Application" />
+    <module name="javlar" />
+    <option name="PROGRAM_PARAMETERS" value="serve" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
