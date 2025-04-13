@@ -1,0 +1,5 @@
+homepage: https://micrometer.io/
+description: |
+  **Micrometer** provides a facade for observability systems, allowing you to instrument JVM-based application code without vendor lock-in. Like SLF4J, but for observability.
+  
+  The `micrometer-jetty11` package adds metrics for Jetty applications.
